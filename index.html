@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JEFE TEASTORE</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.4">
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-top">
+                <div class="logo-group">
+                    <div class="logo-wrapper">
+                        <!-- New Logo Image integration -->
+                        <img src="assets/new_logo.png" style="height: 48px; width: auto; object-fit: contain;"
+                            alt="JEFE TEASTORE">
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="support-icon-wrapper" onclick="ZenUI.openSupport()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="cart-icon-wrapper" onclick="ZenUI.openCart()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        <span id="cart-badge" class="cart-badge">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="category-scroll">
+                <button class="cat-btn active" onclick="ZenUI.filterCatalog('all', this)">Усі</button>
+                <button class="cat-btn" onclick="ZenUI.filterCatalog('Puerh', this)">Пуер</button>
+                <button class="cat-btn" onclick="ZenUI.filterCatalog('Oolong', this)">Улун</button>
+                <button class="cat-btn" onclick="ZenUI.filterCatalog('Sets', this)">Набори</button>
+                <button class="cat-btn" onclick="ZenUI.filterCatalog('Teaware', this)">Посуд</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="product-list" class="product-grid"></div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="ZenUI.closeModals()">&times;</button>
+            <div class="modal-carousel">
+                <div id="carousel-track" class="carousel-track"></div>
+                <button class="carousel-nav prev" onclick="ZenUI.moveCarousel(-1)">&#10094;</button>
+                <button class="carousel-nav next" onclick="ZenUI.moveCarousel(1)">&#10095;</button>
+                <div id="carousel-dots" class="carousel-dots"></div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-header">
+                    <div id="modal-category" class="product-category"></div>
+                    <h2 id="modal-title" class="modal-title"></h2>
+                    <div id="modal-price" class="modal-price"></div>
+                </div>
+                <div id="modal-variants" class="weight-options"></div>
+                <p id="modal-description" class="modal-description"></p>
+                <div id="modal-brewing" class="brewing-guide"></div>
+                <div class="quantity-control">
+                    <button class="btn-circle" onclick="ZenUI.adjustQty(-1)">-</button>
+                    <span id="modal-qty" class="quantity-display">1</span>
+                    <button class="btn-circle" onclick="ZenUI.adjustQty(1)">+</button>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="ZenUI.addToCart(false)">Додати</button>
+                    <button class="btn-primary" onclick="ZenUI.addToCart(true)">Купити</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cart-confirm-modal" class="modal-overlay center-modal">
+        <div class="modal-content">
+            <div class="success-content" style="padding: 30px;">
+                <h3 style="margin-bottom: 20px;">Товар у кошику!</h3>
+                <div class="action-buttons">
+                    <button class="btn-secondary" onclick="ZenUI.closeModals()">Продовжити</button>
+                    <button class="btn-primary" onclick="ZenUI.openCart()">В кошик</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="ZenUI.closeModals()">&times;</button>
+            <div class="checkout-body">
+                <h2 id="checkout-title">Ваш Кошик</h2>
+                <div id="cart-items" class="cart-items-list"></div>
+                <div id="checkout-success" class="hidden">
+                    <div class="success-content">
+                        <div class="success-icon">✅</div>
+                        <h2>Дякуємо!</h2>
+                        <p>Менеджер зв'яжеться з вами.</p>
+                        <button class="btn-primary" style="margin-top: 20px; width: 100%;"
+                            onclick="ZenUI.closeModals()">Добре</button>
+                    </div>
+                </div>
+                <div id="checkout-footer" class="checkout-footer">
+                    <div class="total-row"><span>Разом:</span><span id="cart-total">0₴</span></div>
+                    <div class="checkout-contact-form">
+                        <div class="form-group">
+                            <label>Ваш месенджер:</label>
+                            <div class="messenger-selector">
+                                <label class="messenger-option"><input type="radio" name="order-messenger"
+                                        value="Telegram" checked><span class="messenger-box">Telegram</span></label>
+                                <label class="messenger-option"><input type="radio" name="order-messenger"
+                                        value="Viber"><span class="messenger-box">Viber</span></label>
+                                <label class="messenger-option"><input type="radio" name="order-messenger"
+                                        value="WhatsApp"><span class="messenger-box">WhatsApp</span></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Номер телефону:</label>
+                            <input type="tel" id="order-phone" class="form-input" placeholder="+380...">
+                        </div>
+                    </div>
+                    <button id="checkout-submit-btn" class="btn-primary" onclick="ZenUI.processCheckout()">Оформити
+                        замовлення</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Modal -->
+    <div id="support-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="ZenUI.closeModals()">&times;</button>
+            <div class="checkout-body">
+                <h2 id="support-title">Підтримка</h2>
+                <div id="support-success" class="hidden">
+                    <div class="success-content">
+                        <div class="success-icon">✉️</div>
+                        <h2>Надіслано!</h2>
+                        <p>Ми відповімо найближчим часом.</p>
+                        <button class="btn-primary" style="margin-top: 20px;"
+                            onclick="ZenUI.closeModals()">Закрити</button>
+                    </div>
+                </div>
+                <div id="support-form-container">
+                    <div class="checkout-contact-form">
+                        <div class="form-group">
+                            <label>Ваше запитання:</label>
+                            <textarea id="support-question" class="form-textarea"
+                                placeholder="Напишіть нам..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Куди написати (месенджер):</label>
+                            <div class="messenger-selector">
+                                <label class="messenger-option"><input type="radio" name="support-messenger"
+                                        value="Telegram" checked><span class="messenger-box">Telegram</span></label>
+                                <label class="messenger-option"><input type="radio" name="support-messenger"
+                                        value="Viber"><span class="messenger-box">Viber</span></label>
+                                <label class="messenger-option"><input type="radio" name="support-messenger"
+                                        value="WhatsApp"><span class="messenger-box">WhatsApp</span></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Ваш номер:</label>
+                            <input type="tel" id="support-phone" class="form-input" placeholder="+380...">
+                        </div>
+                    </div>
+                    <button id="support-submit-btn" class="btn-primary"
+                        onclick="ZenUI.processSupport()">Надіслати</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="products.js?v=1.2"></script>
+    <script src="script.js?v=1.2"></script>
+</body>
+
+</html>
