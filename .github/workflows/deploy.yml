@@ -29,9 +29,10 @@ jobs:
             echo "❌ ERROR: TELEGRAM_BOT_TOKEN is empty! Check your GitHub Secrets."
             exit 1
           fi
-          sed -i "s/__BOT_TOKEN_PLACEHOLDER__/$BOT_TOKEN/g" script.js
-          sed -i "s/__ADMIN_CHAT_ID_PLACEHOLDER__/$CHAT_ID/g" script.js
-          echo "✅ Secrets replaced successfully."
+          # Replace placeholders in all .js files recursively
+          find . -name "*.js" -type f -exec sed -i "s|__BOT_TOKEN_PLACEHOLDER__|$BOT_TOKEN|g" {} +
+          find . -name "*.js" -type f -exec sed -i "s|__ADMIN_CHAT_ID_PLACEHOLDER__|$CHAT_ID|g" {} +
+          echo "✅ Secrets replaced in all JS files successfully."
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
