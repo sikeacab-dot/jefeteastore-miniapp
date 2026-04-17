@@ -48,7 +48,10 @@ const ZenUI = {
         if (!list) return;
         const items = filter === 'all' ? ZenState.products : ZenState.products.filter(p => p.category === filter);
         list.innerHTML = items.map(p => {
-            const img = (p.images && p.images.length > 0) ? p.images[0] : (p.image || 'assets/tea_new.jpg');
+            const rawImg = (p.images && p.images.length > 0) ? p.images[0] : p.image;
+            const img = (rawImg && !rawImg.startsWith('http') && !rawImg.startsWith('data:') && !rawImg.startsWith('assets/')) 
+                ? `assets/${rawImg}` 
+                : (rawImg || 'assets/tea_new.jpg');
             let priceDisplay = `${p.price}₴`;
             if (p.on_order) {
                 priceDisplay = '<span style="font-size: 0.9em; color: var(--text-secondary);">Під замовлення</span>';
@@ -82,7 +85,10 @@ const ZenUI = {
         document.getElementById('modal-category').textContent = p.category;
         document.getElementById('modal-description').textContent = p.description;
         document.getElementById('modal-qty').textContent = ZenState.current.qty;
-        const imgs = (p.images && p.images.length > 0) ? p.images : [p.image || 'assets/tea_new.jpg'];
+        const rawImgs = (p.images && p.images.length > 0) ? p.images : [p.image || 'assets/tea_new.jpg'];
+        const imgs = rawImgs.map(img => (img && !img.startsWith('http') && !img.startsWith('data:') && !img.startsWith('assets/')) 
+            ? `assets/${img}` 
+            : img);
         document.getElementById('carousel-track').innerHTML = imgs.map(img => `<img src="${img}" onerror="this.src='https://placehold.co/400x400?text=Tea'">`).join('');
         document.getElementById('carousel-dots').innerHTML = imgs.length > 1 ? imgs.map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}" onclick="ZenUI.goToImage(${i})"></div>`).join('') : '';
         document.querySelectorAll('.carousel-nav').forEach(n => n.style.display = imgs.length > 1 ? 'block' : 'none');
@@ -190,7 +196,10 @@ const ZenUI = {
                     } else {
                         total += (priceVal * qty);
                     }
-                    const img = (p.images && p.images.length > 0) ? p.images[0] : (p.image || 'assets/tea_new.jpg');
+                    const rawImg = (p.images && p.images.length > 0) ? p.images[0] : p.image;
+                    const img = (rawImg && !rawImg.startsWith('http') && !rawImg.startsWith('data:') && !rawImg.startsWith('assets/')) 
+                        ? `assets/${rawImg}` 
+                        : (rawImg || 'assets/tea_new.jpg');
                     html += `
                     <div class="cart-item">
                         <img src="${img}" class="cart-item-img">
